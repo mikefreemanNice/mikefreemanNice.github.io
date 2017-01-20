@@ -3,6 +3,7 @@ title: 初识Rocketmq
 date: 2017-01-20 13:21:53
 tags: [rocketmq]
 categories: [消息队列]
+description: 简单介绍一下Rocketmq的历史和几个专业术语
 ---
 
 # 产品发展历史
@@ -11,7 +12,7 @@ categories: [消息队列]
   由开源社区 killme2008 维护，开源社区非常活跃。
 
   [https://github.com/killme2008/Metamorphosis](https://github.com/killme2008/Metamorphosis)
-
+<!--more-->
 - Metaq 2.x
 
   亍2012年10月份上线，在淘宝内部被广泛使用。
