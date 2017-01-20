@@ -1,5 +1,5 @@
 ---
-title: 初识Rocketmq
+title: 初识Rocketmq(一)
 date: 2017-01-20 13:21:53
 tags: [rocketmq]
 categories: [消息队列]
