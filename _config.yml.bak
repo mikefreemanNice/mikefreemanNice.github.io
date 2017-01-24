@@ -71,5 +71,5 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/mikefreemanNice/mikefreemanNice.github.io.git
+  repo: ssh://git@github.com/mikefreemanNice/mikefreemanNice.github.io.git
   branch: master
