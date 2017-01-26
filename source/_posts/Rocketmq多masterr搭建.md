@@ -23,6 +23,9 @@ Rocketmq目前已收录于apache下，目前版本是4.0。在此之前版本更
 |192.168.2.201|rocketmq-master1|
 |192.168.2.202|rocketmq-nameserver2|
 |192.168.2.202|rocketmq-master2|
+|192.168.2.201|centos201|
+|192.168.2.202|centos202|
+这里需要注意一点，我在hosts信息中分别把各自主机名和对应ip配置进来，之前尝试没有配置而报错。
 # 上传解压
 - 上传alibaba-rocketmq-3.2.6.tar.gz文件到/usr/local/software
 - 解压并创建软链接
