@@ -33,9 +33,9 @@ Consumer的一种，应用通常向Consumer对象注册一个listener接口，�
 - **PullConsumer**：
 Consumer的一种，应用通常主动调用Consumer的拉消息方法从Broker拉消息，主动权由应用控制。
 - **Producer Group**：
-一类Producer的集合名称，这类Producer通常収送一类消息，且发送逡辑一致。
+一类Producer的集合名称，这类Producer通常収送一类消息，且发送逻辑一致。
 - **Consumer Group**：
-一类Consumer的集合名称，这类Consumer通常消费一类消息，且发送逡辑一致。
+一类Consumer的集合名称，这类Consumer通常消费一类消息，且发送逻辑一致。
 - **Broker**：
 消息中转角色，负责存储消息，转发消息，一般也称为 Server。在 JMS 规范中称为 Provider。
 - **广播消息**：
@@ -50,6 +50,7 @@ Consumer的一种，应用通常主动调用Consumer的拉消息方法从Broker�
 顺序消息的一种，无论正常或异常情况都可以保证顺序消息，但是牺牲了分布式failover特性，即Broker集群中只有有一台机器不可用，则整个集群都不可用，服务可用性大大降低。目前已知的应用只有数据库的binlog同步强依赖严格顺序消息，其他应用绝大部分都可以容忍短暂的乱序，推荐使用普通的顺序消息。
 - **Message Queue**：
 在Rocketmq中，所有消息队列都是持久化，长度无限的数据结构，所谓长度无限是指队列中的每个存储单元都是定长，访问其中的存储单元使用Offset访问，offset为java lang类型，64位，理论上讲100年内不会益出，所以认为是长度无限，另外队列只保存最近几天的数据，之前的数据会按照过期时间来删除。也可以认为Message Queue是一个长度无限的数组，offset是下标。
+
 # 集群方式
 - **单个Master**
 这种方式的风险比较大，一旦Broker重启或者宕机，会导致整个服务不可用，不建议线上环境使用。

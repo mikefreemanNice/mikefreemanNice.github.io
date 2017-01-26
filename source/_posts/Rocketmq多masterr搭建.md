@@ -26,6 +26,7 @@ Rocketmq目前已收录于apache下，目前版本是4.0。在此之前版本更
 |192.168.2.201|centos201|
 |192.168.2.202|centos202|
 这里需要注意一点，我在hosts信息中分别把各自主机名和对应ip配置进来，之前尝试没有配置而报错。
+
 # 上传解压
 - 上传alibaba-rocketmq-3.2.6.tar.gz文件到/usr/local/software
 - 解压并创建软链接
@@ -33,6 +34,7 @@ Rocketmq目前已收录于apache下，目前版本是4.0。在此之前版本更
 tar -zxvf alibaba-rocketmq-3.2.6.tar.gz -C /usr/local
 ln -s alibaba-rocketmq rocketmq
 ```
+
 # 创建存储路径
 ```
 mkdir /usr/local/rocketmq/store
@@ -40,6 +42,7 @@ mkdir /usr/local/rocketmq/store/commitlog
 mkdir /usr/local/rocketmq/store/consumequeue
 mkdir /usr/local/rocketmq/store/index
 ```
+
 # 修改Rocketmq的配置文件
 ```
 vim /usr/local/rocketmq/conf/2m-noslave/broker-a.properties
@@ -108,11 +111,13 @@ flushDiskType=ASYNC_FLUSH
 #拉消息线程池数量
 #pullMessageThreadPoolNums=128
 ```
+
 # 修改日志配置文件
 ```
 mkdir -p /usr/local/rocketmq/logs
 cd /usr/local/rocketmq/conf && sed -i 's#${user.home}#/usr/local/rocketmq#g' *.xml
 ```
+
 # 修改启动脚本参数
 开发环境jvm配置
 ```
@@ -130,11 +135,13 @@ vim /usr/local/rocketmq/bin/runserver.sh
 JAVA_OPT="${JAVA_OPT}" -server -Xms1g -Xmx1g -Xmn512m
 -XX:PermSize=128m -XX:MaxPermSize=320m"
 ```
+
 # 启动NameServer
 ```
 cd /usr/local/rocketmq/bin
 nohup sh mqnamesrv &
 ```
+
 # 启动BrokerServer
 - brokerA(192.168.2.201)
 ```
@@ -153,6 +160,7 @@ jps
 tail -f -n 500 /usr/local/rocketmq/logs/rocketmqlogs/broker.log
 tail -f -n 500 /usr/local/rocketmq/logs/rocketmqlogs/namesrc.log
 ```
+
 # 停止服务及数据清理
 ```
 cd /usr/local/rocketmq/bin
@@ -165,4 +173,42 @@ mkdir /usr/local/rocketmq/store
 mkdir /usr/local/rocketmq/store/commitlog
 mkdir /usr/local/rocketmq/store/consumequeue
 mkdir /usr/local/rocketmq/store/index
+```
+
+# 多Master多Slave模式
+配置多master多slave模式的方式和本文介绍的多master方式大体相同，不过需要注意以下几点。
+- Hosts配置信息
+
+| IP| Name|
+|---|---|
+|192.168.2.201|rocketmq-nameserver1|
+|192.168.2.201|rocketmq-master1|
+|192.168.2.202|rocketmq-nameserver2|
+|192.168.2.202|rocketmq-master2|
+|192.168.2.203|rocketmq-nameserver3|
+|192.168.2.203|rocketmq-master1-slave|
+|192.168.2.204|rocketmq-nameserver4|
+|192.168.2.204|rocketmq-master2-slave|
+|192.168.2.201|centos201|
+|192.168.2.202|centos202|
+|192.168.2.203|centos203|
+|192.168.2.204|centos204|
+
+- 选择配置文件
+这里需要编辑对应的配置文件：在/usr/local/rocketmq/conf下存在三个配置文件，分别为2m-2s-async,2m-2s-sync,2m-noslave。当我们需要搭建多主多从的集群环境时，考虑异步复制还是同步双写模式来选择对应配置文件进行修改。
+- 配置文件修改
+配置文件修改注意以下几点
+```
+brokerClusterName=rocketmq-cluster
+#broker名字，注意此处不同的配置文件填写的不一样,若为从节点，则与对应主节点名字相同
+brokerName=broker-a
+#0 表示 Master，>0 表示 Slave
+brokerId=0
+#nameServer地址，分号分割lushDiskType=ASYNC_FLUSH
+namesrvAddr=rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876;rocketmq-nameserver4:9876
+#Broker 的角色
+#ASYNC_MASTER 异步复制Master
+#SYNC_MASTER 同步双写Master
+#SLAVE
+brokerRole=ASYNC_MASTER
 ```
