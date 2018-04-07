@@ -9,7 +9,7 @@ description: 本文介绍Rocketmq产品历史和几个专业术语以及集群�
 # 产品发展历史
 - Metaq（Metamorphosis） 1.x
 
-  由开源社区 killme2008 维护，开源社区非常活跃。
+  由开源社区 killme2008 维护，开源社区非常常活跃。
 
   [https://github.com/killme2008/Metamorphosis](https://github.com/killme2008/Metamorphosis)
 <!--more-->
