@@ -1,10 +1,8 @@
 {% if page.comments %}
   <div class="comments" id="comments">
-    {% if (theme.duoshuo and theme.duoshuo.shortname) or theme.duoshuo_shortname %}
-      <div class="ds-thread" data-thread-key="{{ page.path }}"
-           data-title="{{ page.title }}" data-url="{{ page.permalink }}">
-      </div>
-    {% elseif theme.facebook_sdk.enable and theme.facebook_comments_plugin.enable %}
+		{% if theme.changyan_appid and theme.changyan_appkey %}
+       <div id="SOHUCS" ></div>
+		{% elseif theme.facebook_sdk.enable and theme.facebook_comments_plugin.enable %}
       <div class="fb-comments"
            data-href="{{ page.permalink }}"
            data-numposts="{{ theme.facebook_comments_plugin.num_of_posts }}"
@@ -24,6 +22,6 @@
       <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
     {% elseif theme.youyan_uid %}
       <div id="uyan_frame"></div>
-    {% endif %}
+		{% endif %}
   </div>
 {% endif %}
