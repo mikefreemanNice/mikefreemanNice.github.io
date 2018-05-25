@@ -55,6 +55,31 @@ Nexus默认的用户名密码是admin/admin123
 
 当遇到奇怪问题时，重启nexus，重启后web界面要1分钟左右后才能访问。
 
+设置开机启动
+```
+ln -s /usr/local/nexus-3.6.0-02/bin/nexus /etc/init.d/nexus3
+chkconfig --add nexus3
+chkconfig nexus3 on
+```
+修改nexus用户为root
+```
+vim /usr/local/nexus/bin/nexus.rc
+```
+
+```
+//设置
+run_as_user="root"
+```
+修改 nexus3 启动时要使用的 jdk 版本
+```
+vim /usr/local/nexus/bin/nexus
+```
+
+```
+#14行
+INSTALL4J_JAVA_HOME_OVERRIDE=/usr/share/java/jdk1.8.0_131
+```
+
 Nexus的工作目录是`sonatype-work`（路径一般在nexus同级目录下），日志文件也在这里。
 ```
 ls sonatype-work/nexus3/
