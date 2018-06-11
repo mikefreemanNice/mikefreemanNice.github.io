@@ -3,6 +3,7 @@ title: 初识Rocketmq(一)
 date: 2017-01-20 13:21:53
 tags: [rocketmq]
 categories: [消息队列]
+comments: false
 description: 本文介绍Rocketmq产品历史和几个专业术语以及集群方式
 ---
 

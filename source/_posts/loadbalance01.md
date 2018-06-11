@@ -2,7 +2,7 @@
 title: Ribbon负载均衡
 date: 2018-06-11 22:56:10
 tags: [SpringCloud]
-comments: true
+comments: false
 categories: [SpringCloud]
 description: 负载均衡常用的两种方式
 ---

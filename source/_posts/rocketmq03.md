@@ -3,6 +3,7 @@ title: 初识Rocketmq(二)
 date: 2017-01-26 08:54:26
 tags: [rocketmq]
 categories: [消息队列]
+comments: false
 description: 本文介绍Rocketmq消息消费的三种方式以及消息重试机制
 ---
 # Rocketmq普通消息消费

@@ -1,7 +1,7 @@
 ---
 title: "maven私服nexus3.x环境配置"
 date: 2018-04-22 01:01:16
-comments: true
+comments: false
 categories: 开发工具
 tags: [nexus]
 ---

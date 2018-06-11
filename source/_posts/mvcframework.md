@@ -2,7 +2,7 @@
 title: 搭建一个简单的Java MVC框架
 date: 2018-04-26 00:27:14
 tags: [Java]
-comments: true
+comments: false
 categories: [Java]
 description: 如何搭建一个Java MVC框架
 ---

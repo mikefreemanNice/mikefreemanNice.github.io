@@ -2,7 +2,7 @@
 title: 模拟spring ioc
 date: 2018-05-25 22:12:07
 tags: [Spring]
-comments: true
+comments: false
 categories: [Spring]
 description: 如何实现ioc框架
 ---

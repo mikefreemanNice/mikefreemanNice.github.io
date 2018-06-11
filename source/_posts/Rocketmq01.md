@@ -3,6 +3,7 @@ title: Rocketmq多master搭建
 date: 2017-01-24 10:57:07
 tags: [rocketmq]
 categories: [消息队列]
+comments: false
 description: 本文介绍如何搭建rocketmq的多master的环境。
 ---
 # Rocketmq物理部署结构图
