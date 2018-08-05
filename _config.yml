@@ -72,5 +72,5 @@ theme: next
 deploy:
   type: git
   repo: https://github.com/mikefreemanNice/mikefreemanNice.github.io.git
-	#ssh://git@github.com/mikefreemanNice/mikefreemanNice.github.io.git
+	#repo: ssh://git@github.com/mikefreemanNice/mikefreemanNice.github.io.git
   branch: master
