@@ -6,7 +6,7 @@
 favicon: /favicon.ico
 
 # Set default keywords (Use a comma to separate)
-keywords: "Hexo, NexT"
+keywords: "MichaelFreeman, wowfree"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -28,7 +28,7 @@ copyright: true
 canonical: true
 
 # Change headers hierarchy on site-subtitle (will be main site description) and on all post/pages titles for better SEO-optimization.
-seo: false
+seo: true
 
 # ---------------------------------------------------------------
 # Menu Settings
@@ -41,6 +41,7 @@ menu:
   about: /about
   archives: /archives
   tags: /tags
+  baidusitemap: /baidusitemap.xml
   #sitemap: /sitemap.xml
   #commonweal: /404.html
 
@@ -355,7 +356,7 @@ busuanzi_count:
 
 
 # Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEO
-baidu_push: false
+baidu_push: true
 
 # Google Calendar
 # Share your recent schedule to others via calendar page
