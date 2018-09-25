@@ -32,7 +32,7 @@ description: 根据dubbo exchange和transport源码写一下心得体会。
 # dubbo分析
 dubbo的交互层正常来讲应该是不同client端和Server端通路的维护，也就是netty中channel的维护，正常来说一个client和一个server之间相同ip和port可以有多个channel的，但是dubbo在实现知识允许一个ip:port只能维护一个通路，维护多个可能在传输效率上会有提升，但是如何保证字节传输时用相同的channel，以及rpc调用顺序如何保证是一个难点。
 
-## 网络传输层
+## 网络传输层&信息交换层
 dubbo如何维护连接通路呢？首先需要知道它采用了SPI的扩展方式，所以提供了Transporter接口，实现了各种扩展，比如netty，mian，grizzly等。默认采用netty方式。
 
 ```
@@ -111,4 +111,12 @@ public abstract class AbstractChannel extends AbstractPeer implements Channel {
     }
 ```
 
-未完待续......
+NettyChannel的send方法具体的调用如下：
+dubbo中client的请求功能的实现其实调用的是NettyChannel的send方法，但是谁调用了这个send?
+NettyClient的抽象类AbstractClient实现了send(Object message,boolean sent)
+先通过getChannel()获取到channel，这个channel是在dubbo包下的，再调用channel.send()方法，其中getChannel()是AbstractClient是一个抽象方法
+它的实现实在NettyClient中完成的，也就是NettyChannel中io.netty.channel.channel。
+
+这里从网上找了一张很好的图诠释了dubbo的通信过程：
+![dubbo explain](http://pic.yupoo.com/kazaff/EwVU804K/78m8v.png)
+
