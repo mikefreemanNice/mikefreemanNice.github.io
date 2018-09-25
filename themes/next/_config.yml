@@ -41,7 +41,6 @@ menu:
   about: /about
   archives: /archives
   tags: /tags
-  baidusitemap: /baidusitemap.xml
   #sitemap: /sitemap.xml
   #commonweal: /404.html
 
@@ -63,7 +62,8 @@ menu_icons:
   sitemap: sitemap
   commonweal: heartbeat
 
-
+baidusitemap:
+  path: baidusitemap.xml
 
 
 # ---------------------------------------------------------------
