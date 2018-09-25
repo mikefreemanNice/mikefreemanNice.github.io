@@ -469,10 +469,10 @@ search:
 
 
 # changyan
-changyan:
-	enable: true
-	appid: cytzMAUh3
-	appkey: 19ebde29ba67ab2df170b70d9c940e7c
+#changyan:
+#	enable: true
+#	appid: cytzMAUh3
+#	appkey: 19ebde29ba67ab2df170b70d9c940e7c
 
-changyan_appid: 'cytzMAUh3'
-changyang_appkey: '19ebde29ba67ab2df170b70d9c940e7c'
+#changyan_appid: 'cytzMAUh3'
+#changyang_appkey: '19ebde29ba67ab2df170b70d9c940e7c'
