@@ -9,7 +9,7 @@ description: 当服务注册中心使用Consul时，如何配置SpringCloud的he
 
 # 前言
 在目前微服务很火爆的情况下，SpringCloud作为各种组件应有尽有并且开源的情况下受到很多公司青睐，这篇文章主要是针对consul作为服务注册中心的配置。
-Eureka2.0闭源，加上Consul作为ServiceMesh提出理念下的一个新生产物，将来会受到恨到青睐。
+Eureka2.0闭源，加上Consul作为ServiceMesh提出理念下的一个新生产物，将来会受到很多青睐。
 
 # 环境搭建
 Consul的官网：[https://www.consul.io/](https://www.consul.io/)
