@@ -71,6 +71,11 @@ spring.cloud.consul.discovery.hostname=localhost
 spring.cloud.consul.discovery.health-check-path=/health
 # 健康检测时间间隔
 spring.cloud.consul.discovery.health-check-interval=10s
+
+# springboot2.0+加入下面配置
+management.endpoints.web.exposure.include=*
+# springboot2.0+health路径如下
+spring.cloud.consul.discovery.health-check-path=/actuator/health
 ```
 启动之后访问http://localhost:8500
 ![显示结果](springcloud01/consul.png)
