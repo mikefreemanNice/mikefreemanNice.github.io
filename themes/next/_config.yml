@@ -468,6 +468,9 @@ search:
   format: html
   limit: 10000
 
+reward_comment:
+wechatpay: /images/wechat.png
+alipay: /images/alipay.png
 
 # changyan
 #changyan:
