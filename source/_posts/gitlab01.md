@@ -86,6 +86,8 @@ vim /home/w/gitlab/config/gitlab.rb
 ```
 
 ```
+external_url 'http://192.168.1.201:8001'
+nginx['listen_port'] = 80
 gitlab_rails['gitlab_ssh_host'] = '192.168.1.201'
 gitlab_rails['gitlab_shell_ssh_port'] = 2201
 ```
