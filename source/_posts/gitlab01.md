@@ -77,7 +77,7 @@ sudo docker run --detach \
     gitlab/gitlab-ce:latest
 ```
 192.168.1.201是你本机的ip，注意不要写localhost或者127.0.0.1
-/home/w是你本地映射docker环境的文件，要先建立出这个文件夹。
+/home/w是你本地映射docker环境的文件，如果不存在会创建。
 
 ## 配置端口映射
 
@@ -107,10 +107,10 @@ docker run --rm -t -i -v /home/w/gitlab-runner/config:/etc/gitlab-runner --name 
 如果是specific runner 则token在项目下的ci页面内
 
 如果是共享的runner，则token在管理员的runner配置内Admin-Area-> Overview -> Runners
-也就是可以注册多个runner
+也就是可以注册多个runner,name不同即可。
 
 ```
-docker run --rm -t -i -v /home/w/gitlab-runner2/config:/etc/gitlab-runner --name gitlab-runner2 gitlab/gitlab-runner register
+docker run --rm -t -i -v /home/w/gitlab-runner/config:/etc/gitlab-runner --name gitlab-runner2 gitlab/gitlab-runner register
 ```
 
 ## 启动gitlab-runner
