@@ -64,6 +64,7 @@ docker pull gitlab
 docker pull gitlab-runner
 ```
 ## 启动gitlab
+官网：[https://docs.gitlab.com/omnibus/docker/](https://docs.gitlab.com/omnibus/docker/)
 
 ```
 sudo docker run --detach \
