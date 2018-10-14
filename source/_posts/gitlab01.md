@@ -103,7 +103,15 @@ docker restart imageid
 ```
 docker run --rm -t -i -v /home/w/gitlab-runner/config:/etc/gitlab-runner --name gitlab-runner gitlab/gitlab-runner register
 ```
-注意/home/w/gitlab-runner是下部启动gitlab-runner映射相同的路径，否则会报错。
+这里会一步一步提示需要的信息，详情见官网，
+如果是specific runner 则token在项目下的ci页面内
+
+如果是共享的runner，则token在管理员的runner配置内Admin-Area-> Overview -> Runners
+也就是可以注册多个runner
+
+```
+docker run --rm -t -i -v /home/w/gitlab-runner2/config:/etc/gitlab-runner --name gitlab-runner2 gitlab/gitlab-runner register
+```
 
 ## 启动gitlab-runner
 
@@ -113,5 +121,4 @@ docker run -d --name gitlab-runner --restart always \
   -v /var/run/docker.sock:/var/run/docker.sock \
   gitlab/gitlab-runner:latest
 ```
-这里会一步一步提示需要的信息，详情见官网，
-token在项目下的ci页面内
+现在可以部署你自己的项目到gitlab了！
