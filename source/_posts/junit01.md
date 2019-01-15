@@ -1,7 +1,7 @@
 ---
 title: 重写Junit Runner
 date: 2019-01-15 16:49:12
-tags: [Spring]
+tags: [Java]
 comments: false
 categories: [Java]
 description: junit如何实现通用的过滤器过滤某些不想执行的逻辑。
@@ -14,7 +14,7 @@ description: junit如何实现通用的过滤器过滤某些不想执行的逻�
 通过重写org.junit.runners.BlockJUnit4ClassRunner的ignore逻辑进行过滤。
 
 # 具体过程
-由于项目需要集成Spring，单测需要集成spring的环境配置。
+由于测试的项目需要集成Spring，单测需要集成spring的环境配置。
 ## 构造自己的Runner
 代码如下：
 
