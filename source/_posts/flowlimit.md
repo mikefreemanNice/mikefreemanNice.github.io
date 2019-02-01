@@ -86,7 +86,7 @@ public class FlowLimit {
 
 
     private final static Semaphore semaphore = new Semaphore(10, true);
-    private final static CountDownLatch countDownLatch = new CountDownLatch(50);
+    private final static CountDownLatch countDownLatch = new CountDownLatch(1);
     private final static ExecutorService executorService = new ThreadPoolExecutor(100, 100, 0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>());
 
@@ -94,8 +94,8 @@ public class FlowLimit {
         for (int i = 0; i < 50; i++) {
             Task task = new Task(i);
             executorService.execute(task);
-            countDownLatch.countDown();
         }
+        countDownLatch.countDown();
         executorService.shutdown();
         TimeUnit.MILLISECONDS.sleep(5000);
     }
