@@ -11,7 +11,7 @@ description: 详细介绍@Resource和@Autowired工作原理和使用方式
 每当我们被问到@Resource和@Autowired的区别，通常会这么回答：@Resource是通过名字注入，@Autowired是通过类型注入。 事实真的如此吗？？？
 
 # 问题引入
-项目中采用spring+mybatis框架,同时引入了zebra（https://github.com/Meituan-Dianping/Zebra），mybatis采用基于2.0方式。
+项目中采用spring+mybatis框架,同时引入了zebra[https://github.com/Meituan-Dianping/Zebra](https://github.com/Meituan-Dianping/Zebra)，mybatis采用基于2.0方式。
 
 简略代码如下
 
