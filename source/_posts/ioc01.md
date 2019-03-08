@@ -123,6 +123,8 @@ public void registerFilters() {
 有兴趣的读者可以继续查看com.dianping.zebra.dao.mybatis.ZebraClassPathMapperScanner#doScan的代码，其实到这里已经知道了问题，这个scanner在扫包的时候会将满足条件的接口装载为bean，bean名称为接口名称。
 到这里我们明确了一个问题，我们spring启动时，针对于DemoDao会生成两个实现类，一个是DemoDao,一个是DemoDaoImpl。 （这个问题如果我们采用mybatis3.0的方式其实可以避免）
 
+zebra这个scanner其实和mybatis的org.mybatis.spring.mapper.ClassPathMapperScanner大同小异。
+
 ## @Resource分析
 既然有两个实现类，@Resource为什么会注入zebra生成的，而不是用我们自定义的DemoDaoImpl？这个问题我们要回归到spring，spring对@Resource的解析在这个类中：
 org.springframework.context.annotation.CommonAnnotationBeanPostProcessor。
@@ -244,5 +246,5 @@ org.apache.ibatis.binding.BindingException: Invalid bound statement (not found):
 
 # 总结
 1 看似简单的问题其实很复杂。
-2 有幸的读者可以看看spring对Autowired的解析：
+2 有兴趣的读者可以看看spring对Autowired的解析：
 org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor。
