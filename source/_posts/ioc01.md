@@ -11,7 +11,7 @@ description: 详细介绍@Resource和@Autowired工作原理和使用方式
 每当我们被问到@Resource和@Autowired的区别，通常会这么回答：@Resource是通过名字注入，@Autowired是通过类型注入。 事实真的如此吗？？？
 
 # 问题引入
-项目中采用spring+mybatis框架,同时引入了zebra[https://github.com/Meituan-Dianping/Zebra](https://github.com/Meituan-Dianping/Zebra)，mybatis采用基于2.0方式。
+项目中采用spring+mybatis框架,同时引入了zebra([https://github.com/Meituan-Dianping/Zebra](https://github.com/Meituan-Dianping/Zebra))，mybatis采用基于2.0方式。
 
 简略代码如下
 
@@ -123,7 +123,7 @@ public void registerFilters() {
 有兴趣的读者可以继续查看com.dianping.zebra.dao.mybatis.ZebraClassPathMapperScanner#doScan的代码，其实到这里已经知道了问题，这个scanner在扫包的时候会将满足条件的接口装载为bean，bean名称为接口名称。
 到这里我们明确了一个问题，我们spring启动时，针对于DemoDao会生成两个实现类，一个是DemoDao,一个是DemoDaoImpl。 （这个问题如果我们采用mybatis3.0的方式其实可以避免）
 
-zebra这个scanner其实和mybatis的org.mybatis.spring.mapper.ClassPathMapperScanner大同小异。
+zebra这个scanner其实和spring中org.mybatis.spring.mapper.ClassPathMapperScanner大同小异。
 
 ## @Resource分析
 既然有两个实现类，@Resource为什么会注入zebra生成的，而不是用我们自定义的DemoDaoImpl？这个问题我们要回归到spring，spring对@Resource的解析在这个类中：
