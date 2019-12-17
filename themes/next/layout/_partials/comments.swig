@@ -9,6 +9,8 @@
            data-width="{{ theme.facebook_comments_plugin.width }}"
            data-colorscheme="{{ theme.facebook_comments_plugin.scheme }}">
       </div>
+    {% elseif theme.gitalk.enable %}
+        <div id="gitalk-container"></div>
     {% elseif theme.disqus_shortname %}
       <div id="disqus_thread">
         <noscript>
