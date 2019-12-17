@@ -1,0 +1,928 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="rocketmq,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="本文介绍Rocketmq消息消费的三种方式以及消息重试机制">
+<meta name="keywords" content="rocketmq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识Rocketmq(二)">
+<meta property="og:url" content="http://wowfree.cn/2017/01/26/rocketmq03/index.html">
+<meta property="og:site_name" content="MichaelFreeman">
+<meta property="og:description" content="本文介绍Rocketmq消息消费的三种方式以及消息重试机制">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ok9lr2dej.bkt.clouddn.com/tansaction.png">
+<meta property="og:image" content="http://ok9lr2dej.bkt.clouddn.com/Rocketmq2.png">
+<meta property="og:updated_time" content="2019-12-17T04:49:54.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识Rocketmq(二)">
+<meta name="twitter:description" content="本文介绍Rocketmq消息消费的三种方式以及消息重试机制">
+<meta name="twitter:image" content="http://ok9lr2dej.bkt.clouddn.com/tansaction.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wowfree.cn/2017/01/26/rocketmq03/">
+
+
+
+
+
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+<style>
+.pace .pace-progress {
+background: #1E92FB; /*进度条颜色*/
+height: 3px;
+}
+.pace .pace-progress-inner {
+box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+}
+.pace .pace-activity {
+border-top-color: #1E92FB;    /*上边框颜色*/
+border-left-color: #1E92FB;    /*左边框颜色*/
+}
+</style>
+
+  <title> 初识Rocketmq(二) | MichaelFreeman </title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+<a target="_blank" href="https://github.com/FredaTeam/thrones" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></a>
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">MichaelFreeman</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <h1 class="site-subtitle" itemprop="description">From My Heart</h1>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://wowfree.cn/2017/01/26/rocketmq03/">
+
+  <span style="display:none" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="MichaelFreeman">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/9563435?v=3&u=7da8be774eabf16810fa27b58a2bbc9972ea4a4f&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="MichaelFreeman">
+    <span style="display:none" itemprop="logo" itemscope="" itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="MichaelFreeman" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                初识Rocketmq(二)
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-26T08:54:26+08:00">
+                2017-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/消息队列/" itemprop="url" rel="index">
+                    <span itemprop="name">消息队列</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+              <div class="post-description">
+                  本文介绍Rocketmq消息消费的三种方式以及消息重试机制
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Rocketmq普通消息消费"><a href="#Rocketmq普通消息消费" class="headerlink" title="Rocketmq普通消息消费"></a>Rocketmq普通消息消费</h1><p>这里是rocketmq-example的示例代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Producer，发送消息</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class Producer &#123;</span><br><span class="line">    public static void main(String[] args) throws MQClientException, InterruptedException &#123;</span><br><span class="line">        DefaultMQProducer producer = new DefaultMQProducer(&quot;common_message&quot;);</span><br><span class="line">        producer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line">        producer.start();</span><br><span class="line"></span><br><span class="line">        for (int i = 0; i &lt; 1000; i++) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Message msg = new Message(&quot;TopicTest&quot;,// topic</span><br><span class="line">                    &quot;TagA&quot;,// tag</span><br><span class="line">                    (&quot;Hello RocketMQ &quot; + i).getBytes()// body</span><br><span class="line">                        );</span><br><span class="line">                SendResult sendResult = producer.send(msg);</span><br><span class="line">                System.out.println(sendResult);</span><br><span class="line">            &#125;</span><br><span class="line">            catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">                Thread.sleep(1000);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Consumer，订阅消息</span><br><span class="line"> */</span><br><span class="line">public class Consumer &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException, MQClientException &#123;</span><br><span class="line">        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(&quot;common_message&quot;);</span><br><span class="line">        consumer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line">        /**</span><br><span class="line">         * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费&lt;br&gt;</span><br><span class="line">         * 如果非第一次启动，那么按照上次消费的位置继续消费</span><br><span class="line">         */</span><br><span class="line">        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);</span><br><span class="line"></span><br><span class="line">        consumer.subscribe(&quot;TopicTest&quot;, &quot;*&quot;);</span><br><span class="line"></span><br><span class="line">        consumer.registerMessageListener(new MessageListenerConcurrently() &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public ConsumeConcurrentlyStatus consumeMessage(List&lt;MessageExt&gt; msgs,</span><br><span class="line">                    ConsumeConcurrentlyContext context) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + &quot; Receive New Messages: &quot; + msgs);</span><br><span class="line">                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        consumer.start();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;Consumer Started.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里没有过多的赘述，只是普通的消息生产与消费，需要指出的是，common_message是groupname，它的意义在于：作为生产者，当发送消息的一个节点宕机时，与它处于同一个group的其它节点可以发送消息；作为消费者，同样当消费者的一个节点宕机时，处于同一group的其它节点可以进行消费，实现了高可用的思想。</p>
+<h1 id="Rocketmq顺序消息消费"><a href="#Rocketmq顺序消息消费" class="headerlink" title="Rocketmq顺序消息消费"></a>Rocketmq顺序消息消费</h1><p>首先同样给出代码示例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Producer，发送顺序消息</span><br><span class="line"> */</span><br><span class="line">public class Producer &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">        	DefaultMQProducer producer = new DefaultMQProducer(&quot;order_message&quot;);</span><br><span class="line">            producer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line">            producer.start();</span><br><span class="line"></span><br><span class="line">            String[] tags = new String[] &#123; &quot;TagA&quot;, &quot;TagB&quot;, &quot;TagC&quot;, &quot;TagD&quot;, &quot;TagE&quot; &#125;;</span><br><span class="line"></span><br><span class="line">            for (int i = 0; i &lt; 100; i++) &#123;</span><br><span class="line">                // 订单ID相同的消息要有序</span><br><span class="line">                int orderId = i % 10;</span><br><span class="line">                Message msg =</span><br><span class="line">                        new Message(&quot;topic_one&quot;, tags[i % tags.length], &quot;KEY&quot; + i,</span><br><span class="line">                            (&quot;Hello RocketMQ &quot; + i).getBytes());</span><br><span class="line"></span><br><span class="line">                SendResult sendResult = producer.send(msg, new MessageQueueSelector() &#123;</span><br><span class="line">                    @Override</span><br><span class="line">                    public MessageQueue select(List&lt;MessageQueue&gt; mqs, Message msg, Object arg) &#123;</span><br><span class="line">                        Integer id = (Integer) arg;</span><br><span class="line">                        int index = id % mqs.size();</span><br><span class="line">                        return mqs.get(index);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, orderId);</span><br><span class="line"></span><br><span class="line">                System.out.println(sendResult);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            producer.shutdown();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (MQClientException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (RemotingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (MQBrokerException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 顺序消息消费，带事务方式（应用可控制Offset什么时候提交）</span><br><span class="line"> */</span><br><span class="line">public class Consumer &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws MQClientException &#123;</span><br><span class="line">        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(&quot;order_message&quot;);</span><br><span class="line"></span><br><span class="line">        consumer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line">        /**</span><br><span class="line">         * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费&lt;br&gt;</span><br><span class="line">         * 如果非第一次启动，那么按照上次消费的位置继续消费</span><br><span class="line">         */</span><br><span class="line">        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);</span><br><span class="line"></span><br><span class="line">        consumer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line"></span><br><span class="line">        consumer.subscribe(&quot;topic_one&quot;, &quot;TagA || TagC || TagD&quot;);</span><br><span class="line">        consumer.registerMessageListener(new MessageListenerOrderly() &#123;</span><br><span class="line">            AtomicLong consumeTimes = new AtomicLong(0);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public ConsumeOrderlyStatus consumeMessage(List&lt;MessageExt&gt; msgs, ConsumeOrderlyContext context) &#123;</span><br><span class="line">                context.setAutoCommit(true);</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + &quot; Receive New Messages: &quot; + msgs);</span><br><span class="line">                this.consumeTimes.incrementAndGet();</span><br><span class="line">                if ((this.consumeTimes.get() % 2) == 0) &#123;</span><br><span class="line">                    return ConsumeOrderlyStatus.SUCCESS;</span><br><span class="line">                &#125;</span><br><span class="line">                else if ((this.consumeTimes.get() % 3) == 0) &#123;</span><br><span class="line">                    return ConsumeOrderlyStatus.ROLLBACK;</span><br><span class="line">                &#125;</span><br><span class="line">                else if ((this.consumeTimes.get() % 4) == 0) &#123;</span><br><span class="line">                    return ConsumeOrderlyStatus.COMMIT;</span><br><span class="line">                &#125;</span><br><span class="line">                else if ((this.consumeTimes.get() % 5) == 0) &#123;</span><br><span class="line">                    context.setSuspendCurrentQueueTimeMillis(3000);</span><br><span class="line">                    return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                return ConsumeOrderlyStatus.SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        consumer.start();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;Consumer Started.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要注意以下几点：</p>
+<ol>
+<li>顺序消费的实现原理是生产者将需要有序消费的消息放在同一个队列中，并且该队列存储在MQ集群中的一个节点，不能分散存储，这样消费者只需要从该节点上拉取消费即可。</li>
+<li>消费者在消费时采用了多线程的方式，那么有心的你可能会有这样的疑问，即使消息可以按顺序到达，但是消费的快慢仍然无法保证有序。rocketmq本身实现了有序消费时线程间等待的功能，所以这个问题不用担心。</li>
+<li>context.setAutoCommit(true);这句话的含义：一是删除msgTreeMapTemp里的消息，防止消息堆积，二是把拉消息的偏移量更新到本地，然后定时更新到broker。具体为什么会有这种设置，笔者暂不确定，不过设置为false时你会发现重复消费的情况。</li>
+</ol>
+<h1 id="Rocektmq事务消息消费"><a href="#Rocektmq事务消息消费" class="headerlink" title="Rocektmq事务消息消费"></a>Rocektmq事务消息消费</h1><p>以下是示例代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 发送事务消息例子</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class TransactionProducer &#123;</span><br><span class="line">    public static void main(String[] args) throws MQClientException, InterruptedException &#123;</span><br><span class="line"></span><br><span class="line">        TransactionCheckListener transactionCheckListener = new TransactionCheckListenerImpl();</span><br><span class="line">        TransactionMQProducer producer = new TransactionMQProducer(&quot;trans_message&quot;);</span><br><span class="line">        // 事务回查最小并发数</span><br><span class="line">        producer.setCheckThreadPoolMinSize(2);</span><br><span class="line">        // 事务回查最大并发数</span><br><span class="line">        producer.setCheckThreadPoolMaxSize(2);</span><br><span class="line">        // 队列数</span><br><span class="line">        producer.setCheckRequestHoldMax(2000);</span><br><span class="line">        producer.setTransactionCheckListener(transactionCheckListener);</span><br><span class="line">        producer.setNamesrvAddr(&quot;192.168.2.201:9876;192.168.2.202:9876&quot;);</span><br><span class="line">        producer.start();</span><br><span class="line"></span><br><span class="line">        String[] tags = new String[] &#123; &quot;TagA&quot;, &quot;TagB&quot;, &quot;TagC&quot;, &quot;TagD&quot;, &quot;TagE&quot; &#125;;</span><br><span class="line">        TransactionExecuterImpl tranExecuter = new TransactionExecuterImpl();</span><br><span class="line">        for (int i = 0; i &lt; 1; i++) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Message msg =</span><br><span class="line">                        new Message(&quot;TopicTest&quot;, tags[i % tags.length], &quot;KEY&quot; + i,</span><br><span class="line">                            (&quot;Hello RocketMQ &quot; + i).getBytes());</span><br><span class="line">                SendResult sendResult = producer.sendMessageInTransaction(msg, tranExecuter, null);</span><br><span class="line">                System.out.println(sendResult);</span><br><span class="line"></span><br><span class="line">                Thread.sleep(10);</span><br><span class="line">            &#125;</span><br><span class="line">            catch (MQClientException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        for (int i = 0; i &lt; 100000; i++) &#123;</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        producer.shutdown();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 执行本地事务</span><br><span class="line"> */</span><br><span class="line">public class TransactionExecuterImpl implements LocalTransactionExecuter &#123;</span><br><span class="line">    private AtomicInteger transactionIndex = new AtomicInteger(4);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public LocalTransactionState executeLocalTransactionBranch(final Message msg, final Object arg) &#123;</span><br><span class="line">        int value = transactionIndex.getAndIncrement();</span><br><span class="line"></span><br><span class="line">        if (value == 0) &#123;</span><br><span class="line">            throw new RuntimeException(&quot;Could not find db&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        else if ((value % 5) == 0) &#123;</span><br><span class="line">            return LocalTransactionState.ROLLBACK_MESSAGE;</span><br><span class="line">        &#125;</span><br><span class="line">        else if ((value % 4) == 0) &#123;</span><br><span class="line">            return LocalTransactionState.COMMIT_MESSAGE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return LocalTransactionState.UNKNOW;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 未决事务，服务器回查客户端</span><br><span class="line"> */</span><br><span class="line">public class TransactionCheckListenerImpl implements TransactionCheckListener &#123;</span><br><span class="line">    private AtomicInteger transactionIndex = new AtomicInteger(0);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public LocalTransactionState checkLocalTransactionState(MessageExt msg) &#123;</span><br><span class="line">        System.out.println(&quot;server checking TrMsg &quot; + msg.toString());</span><br><span class="line"></span><br><span class="line">        int value = transactionIndex.getAndIncrement();</span><br><span class="line">        if ((value % 6) == 0) &#123;</span><br><span class="line">            throw new RuntimeException(&quot;Could not find db&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        else if ((value % 5) == 0) &#123;</span><br><span class="line">            return LocalTransactionState.ROLLBACK_MESSAGE;</span><br><span class="line">        &#125;</span><br><span class="line">        else if ((value % 4) == 0) &#123;</span><br><span class="line">            return LocalTransactionState.COMMIT_MESSAGE;</span><br><span class="line">        &#125;</span><br><span class="line">//        return LocalTransactionState.UNKNOW;</span><br><span class="line">        return LocalTransactionState.COMMIT_MESSAGE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里举一个形象的例子<br><img src="http://ok9lr2dej.bkt.clouddn.com/tansaction.png" alt=""><br>生产者首先向MQ发送消息，然后执行本地事务，当事务执行成功则再发送确认消息，否则会回滚本地事务。根据图示我们做以下几个说明：</p>
+<ol>
+<li>图中1操作：生产者向MQ发送一条消息，这条消息为TransactionPreparedType,被保存到commitlog中，并返回给生产者offset和messageid，但它不会保存在consumerqueue中，因此不会被消费，这里需要读者自行理解rocketmq的存储规律。</li>
+<li>当本地事务执行结束（即TransactionExecuterImpl）后，会根据返回结果确认本地事务是否执行成功。返回结果包括COMMIT_MESSAGE、ROLLBACK_MESSAGE、UNKNOWN。当结果为COMMIT_MESSAGE时会再向MQ发送一条消息，并存放在consumerQueue中提供消费者消费。当结果为ROLLBACK_MESSAGE时则同样发送一条消息但消息体为空。当结果为UNKONWN时则MQ会执行自动检测机制（即TransactionCheckListenerImpl），会回调生产者的方法根据该消息的状态做相应处理。</li>
+</ol>
+<h1 id="Rocketmq消息重试机制"><a href="#Rocketmq消息重试机制" class="headerlink" title="Rocketmq消息重试机制"></a>Rocketmq消息重试机制</h1><p>Rocketmq重试机制从三个方面来实现重试的策略。包括生产者向MQ发送消息失败的重试，消费者从MQ拉取消息失败的重试以及消费者处理消息异常时消息的重试。<br><img src="http://ok9lr2dej.bkt.clouddn.com/Rocketmq2.png" alt=""><br>如图所示</p>
+<ol>
+<li>生产者的消息重试策略我们通常可以设置重试的最大次数以及重试的超时时间，也就是消息发送到MQ的超时时间。</li>
+<li>消费者获取消息的重试策略Rocketmq自身已经为用户实现了，默认是16次尝试，间隔时间为1s，30s,60s……</li>
+<li>消费者处理时的异常通过给MQ返回值来判定，ConsumeConcurrentlyStatus.CONSUME_SUCCESS表示处理成功，ConsumeConcurrentlyStatus.RECONSUME_LATER表示处理失败，如果失败则MQ重新发送该消息，直到该消息处理成功。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div></div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="MichaelFreeman WeChat Pay">
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="MichaelFreeman Alipay">
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/rocketmq/" rel="tag"># rocketmq</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/24/Rocketmq01/" rel="next" title="Rocketmq多master搭建">
+                <i class="fa fa-chevron-left"></i> Rocketmq多master搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/08/CompletableFuture01/" rel="prev" title="CompletableFuture解析">
+                CompletableFuture解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/9563435?v=3&u=7da8be774eabf16810fa27b58a2bbc9972ea4a4f&s=400" alt="MichaelFreeman">
+          <p class="site-author-name" itemprop="name">MichaelFreeman</p>
+          <p class="site-description motion-element" itemprop="description">You don't know me, but you're about to</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocketmq普通消息消费"><span class="nav-number">1.</span> <span class="nav-text">Rocketmq普通消息消费</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocketmq顺序消息消费"><span class="nav-number">2.</span> <span class="nav-text">Rocketmq顺序消息消费</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocektmq事务消息消费"><span class="nav-number">3.</span> <span class="nav-text">Rocektmq事务消息消费</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocketmq消息重试机制"><span class="nav-number">4.</span> <span class="nav-text">Rocketmq消息重试机制</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MichaelFreeman</span>
+</div>
+
+<!--
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+ -->
+
+
+  <span>Hosted by <a href="https://pages.coding.me">Coding Pages</a></span>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i>访问人数<span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>总访问量<span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
