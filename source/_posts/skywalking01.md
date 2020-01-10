@@ -306,9 +306,9 @@ public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allAr
         headersField.set(request, Collections.unmodifiableMap(headers));
     }
 ```
-这里解释了http调用时trace的信息是如何传输的：通过header进行传递，只不过这里不是通过拦截器的方式，而是在LoadBalancerFeignClient调用execute的方法是，通过ByteBuddy字节码重写来达到将trace信息存入header的目的。
+这里解释了http调用时trace的信息是如何传输的：通过header进行传递，只不过这里不是通过拦截器的方式，而是在LoadBalancerFeignClient调用execute的方法时，通过ByteBuddy字节码重写来达到将trace信息存入header的目的。
 
-这里额外扩展一下header传入trace信息后，skywalking如何插装springmvc接收？有兴趣读者可以查看org.apache.skywalking.apm.plugin.spring.mvc.v5.define.RestControllerInstrumentation这个类，本质是对Springmvc的注解比如@GetMapping、@PostMapping等等进行插装来接收feign中header的信息。当然，skywalking对不同版本的spring实现都不同。
+这里额外扩展一下header传入trace信息后，skywalking如何插装springmvc接收？有兴趣读者可以查看org.apache.skywalking.apm.plugin.spring.mvc.v5.define.RestControllerInstrumentation这个类，本质是对Springmvc的注解比如@GetMapping、@PostMapping等等进行插装来接收feign中header的信息。当然，skywalking对不同版本的spring实现不同。
 
 ## 总结
 总的来说，skywalking这种方式使用起来方便，但伴随的是开发难度较大，需要对不同组件的底层都由了解才能灵活使用或者封装自己的插件。
