@@ -93,7 +93,7 @@ public static void premain(String agentArgs, Instrumentation instrumentation) th
             // 配置相关config，包括通过java javaagent一些启动参数
             SnifferConfigInitializer.initialize(agentArgs);
 
-            // 加载所有plugin，即apm-sdb-plugin module
+            // 加载所有plugin，即apm-sdk-plugin module
             pluginFinder = new PluginFinder(new PluginBootstrap().loadPlugins());
 
         } catch (ConfigNotFoundException ce) {
