@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://wowfree.cn/2020/01/10/skywalking01/</loc>
-    <lastmod>2020-01-10T06:51:37.729Z</lastmod>
+    <lastmod>2020-02-24T03:53:51.391Z</lastmod>
   </url>  <url>
     <loc>http://wowfree.cn/2019/12/17/mybatis-spring01/</loc>
     <lastmod>2019-12-17T05:26:54.230Z</lastmod>
@@ -55,10 +55,10 @@
     <loc>http://wowfree.cn/2018/08/22/dubbo1/</loc>
     <lastmod>2019-12-17T04:49:54.544Z</lastmod>
   </url>  <url>
-    <loc>http://wowfree.cn/2019/07/21/dynamic-config/</loc>
+    <loc>http://wowfree.cn/2018/10/12/flowlimit/</loc>
     <lastmod>2019-12-17T04:49:54.544Z</lastmod>
   </url>  <url>
-    <loc>http://wowfree.cn/2018/10/12/flowlimit/</loc>
+    <loc>http://wowfree.cn/2019/07/21/dynamic-config/</loc>
     <lastmod>2019-12-17T04:49:54.544Z</lastmod>
   </url>  <url>
     <loc>http://wowfree.cn/2018/10/13/gitlab01/</loc>
