@@ -3,7 +3,7 @@ title: skywalking原理
 date: 2020-01-10 13:55:53
 tags: [Skywalking]
 comments: false
-categories: [Mybatis]
+categories: [devops]
 description: 简要介绍skywalking的实现原理
 ---
 
